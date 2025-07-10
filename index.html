@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>誕生日お祝いページ</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: url('birthday-bg.png') no-repeat center center fixed;
+      background-size: cover;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      font-family: Arial, sans-serif;
+      overflow: hidden;
+    }
+
+    #container {
+      text-align: center;
+      max-width: 100%;
+      padding: 20px;
+    }
+
+    #photo {
+      width: 60vw;
+      max-width: 300px;
+      border-radius: 50%;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #celebrateButton {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: #ffcc00;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      display: block;
+      margin: 0 auto;
+    }
+
+    #message {
+      display: none;
+      font-size: 32px;
+      font-weight: bold;
+      background: linear-gradient(90deg, #ffdd00, #ff8800, #ff3399, #ff66cc, #00ccff);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      animation: gradientText 3s ease infinite, glowEffect 1.5s ease infinite alternate;
+      text-align: center;
+    }
+
+    @keyframes gradientText {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    @keyframes glowEffect {
+      0% { text-shadow: 0 0 10px #ff3399, 0 0 20px #ff66cc, 0 0 30px #ffdd00; }
+      100% { text-shadow: 0 0 20px #ff3399, 0 0 40px #ff66cc, 0 0 60px #ffdd00; }
+    }
+
+    .gift-container {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 30px;
+      visibility: hidden;
+    }
+
+    .giftBox {
+      position: relative;
+      width: 120px;
+      cursor: pointer;
+    }
+
+    .giftBox img {
+      width: 100%;
+    }
+
+    .gift-label {
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 8px;
+      color: #ffffff;
+    }
+
+    .sparkle {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 120%;
+      height: 120%;
+      background: radial-gradient(white 10%, transparent 60%);
+      border-radius: 50%;
+      animation: sparkleEffect 0.6s ease-out forwards;
+      pointer-events: none;
+      display: none;
+      z-index: 10;
+    }
+
+    @keyframes sparkleEffect {
+      0% { transform: scale(0); opacity: 1; }
+      100% { transform: scale(2); opacity: 0; }
+    }
+
+    @keyframes openBox {
+      0% { transform: scale(1) rotate(0deg); opacity: 1; }
+      30% { transform: scale(1.1) rotate(-5deg); }
+      60% { transform: scale(1) rotate(3deg); }
+      100% { transform: scale(0.95) rotateX(90deg); opacity: 0; }
+    }
+
+    .giftBox.opening {
+      animation: openBox 1s ease forwards;
+    }
+
+    #overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 1;
+      display: none;
+    }
+
+    .modal {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 90%;
+      max-width: 600px;
+      padding: 30px;
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      z-index: 2;
+      display: none;
+    }
+
+    .modal img {
+      width: 70%;
+      max-width: 280px;
+      margin-bottom: 15px;
+    }
+
+    .closeButton {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: bold;
+      background: transparent;
+      border: none;
+    }
+
+    .balloon {
+      position: fixed;
+      bottom: -100px;
+      width: 30px;
+      height: 40px;
+      background: red;
+      border-radius: 50%;
+      animation: floatUp 8s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(0); opacity: 1; }
+      100% { transform: translateY(-120vh); opacity: 0; }
+    }
+
+    .confetti {
+      position: fixed;
+      top: -10px;
+      width: 10px;
+      height: 10px;
+      background-color: red;
+      opacity: 0.8;
+      animation: fall 4s linear infinite;
+      z-index: 0;
+    }
+
+    @keyframes fall {
+      0% { transform: translateY(0) rotate(0deg); }
+      100% { transform: translateY(100vh) rotate(360deg); }
+    }
+
+    @media (max-width: 500px) {
+      .modal {
+        padding: 20px;
+      }
+
+      .closeButton {
+        top: 5px;
+        right: 5px;
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="container">
+    <img id="photo" src="face.jpg" alt="顔写真" />
+    <button id="celebrateButton">お祝いする</button>
+    <h1 id="message">♡みーさん♡<br>お誕生日おめでとう！</h1>
+    <div class="gift-container" id="giftContainer">
+      <div class="giftBox" data-modal="modal1">
+        <div class="gift-label">プレゼント1</div>
+        <img src="gift_box.png" alt="プレゼント1">
+        <div class="sparkle"></div>
+      </div>
+      <div class="giftBox" data-modal="modal2">
+        <div class="gift-label">プレゼント2</div>
+        <img src="gift_box.png" alt="プレゼント2">
+        <div class="sparkle"></div>
+      </div>
+      <div class="giftBox" data-modal="modal3">
+        <div class="gift-label">プレゼント3</div>
+        <img src="gift_box.png" alt="プレゼント3">
+        <div class="sparkle"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="overlay"></div>
+  <div class="modal" id="modal1">
+    <button class="closeButton">×</button>
+    <img src="present1.png" alt="プレゼント1" />
+    <p>
+      これでU.F.Oを購入して気持ちよくなってね！<br>
+      <a href="https://www.amazon.co.jp/RENDS-%E3%83%AC%E3%83%B3%E3%82%BA-4663-U-F-O-BASIC/dp/B079Z5TJLB" target="_blank">U.F.Oのリンク</a><br>
+      アマギフ：AQAW-A4NPHT-HLUCR<br>
+      このシリーズのアタッチメントがおすすめだよ、気になるのがあったら買ってみてね<br>
+      <a href="https://x.gd/skqwp" target="_blank">アタッチメントのリンク</a><br>
+    </p>
+  </div>
+  <div class="modal" id="modal2">
+    <button class="closeButton">×</button>
+    <img src="present2.png" alt="プレゼント2" />
+    <p>
+      お酒とおつまみの暇猫セットだよ！<br>
+      かわいいボトルのやつにしたら甘口になってしまった...<br>
+      みーさんのお口に合うといいな！<br>  
+      <a href="https://giftmall.co.jp/present/QboiuXkFKKlR" target="_blank">お酒のリンク</a><br>
+      <a href="https://giftmall.co.jp/present/HFX0G1T0WBLW" target="_blank">おつまみのリンク</a>
+    </p>
+  </div>
+  <div class="modal" id="modal3">
+    <button class="closeButton">×</button>
+    <img src="present3.png" alt="プレゼント3" />
+    <p>
+      何が届くかは内緒にしたかたけど、ギフトサイトの仕様が変わって見れるように...<br>
+      気に入ってくれるといいなー<br>
+      <a href="https://giftmall.co.jp/present/YG0dDu5m6Lt0" target="_blank">ギフトのリンク</a>
+    </p>
+  </div>
+  <audio id="celebrateMusic" src="birthday.mp3"></audio>
+
+  <script>
+    const celebrateButton = document.getElementById('celebrateButton');
+    const celebrateMusic = document.getElementById('celebrateMusic');
+    const message = document.getElementById('message');
+    const giftContainer = document.getElementById('giftContainer');
+    const overlay = document.getElementById('overlay');
+
+    function createBalloons() {
+      setInterval(() => {
+        const b = document.createElement("div");
+        b.className = "balloon";
+        b.style.left = Math.random() * 100 + "%";
+        b.style.background = `hsl(${Math.random() * 360}, 80%, 70%)`;
+        document.body.appendChild(b);
+        setTimeout(() => b.remove(), 8000);
+      }, 500);
+    }
+
+    function createConfetti() {
+      setInterval(() => {
+        const c = document.createElement("div");
+        c.className = "confetti";
+        c.style.left = Math.random() * 100 + "%";
+        c.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 70%)`;
+        document.body.appendChild(c);
+        setTimeout(() => c.remove(), 5000);
+      }, 200);
+    }
+
+    celebrateButton.addEventListener('click', () => {
+      celebrateMusic.play();
+      celebrateButton.style.display = 'none';
+
+      celebrateMusic.addEventListener('ended', () => {
+        message.style.display = 'block';
+        giftContainer.style.visibility = 'visible';
+        createBalloons();
+        createConfetti();
+      });
+    });
+
+    document.querySelectorAll('.giftBox').forEach(box => {
+      box.addEventListener('click', () => {
+        box.classList.add('opening');
+        const sparkle = box.querySelector('.sparkle');
+        sparkle.style.display = 'block';
+
+        setTimeout(() => {
+          box.classList.remove('opening');
+          sparkle.style.display = 'none';
+          const modalId = box.getAttribute('data-modal');
+          const modal = document.getElementById(modalId);
+          overlay.style.display = 'block';
+          modal.style.display = 'block';
+        }, 1000);
+      });
+    });
+
+    document.querySelectorAll('.closeButton').forEach(button => {
+      button.addEventListener('click', () => {
+        const modal = button.closest('.modal');
+        modal.style.display = 'none';
+        overlay.style.display = 'none';
+      });
+    });
+  </script>
+</body>
+</html>
